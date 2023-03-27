@@ -20,9 +20,29 @@ android {
             noCompress "dat"
         }
     }
+    signingConfigs {
+        sign_aosp {
+            keyAlias 'aosp'
+            keyPassword 'ubiqconn'
+            storeFile file('../signkey/aosp_platform.jks')
+            storePassword 'ubiqconn'
+        }
+        sign_ubiqconn {
+            keyAlias 'ubiqconn'
+            keyPassword 'ubiqconn'
+            storeFile file('../signkey/ubiqconn_platform.jks')
+            storePassword 'ubiqconn'
+        }
+    }
     buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.sign_aosp
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.sign_ubiqconn
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

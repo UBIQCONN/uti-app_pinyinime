@@ -1099,7 +1099,7 @@ public class PinyinIME extends InputMethodService {
 
     public void responseSoftKeyEvent(SoftKey sKey) {
         if (mEnvironment.needDebug()) {
-            Log.d(TAG, "responseSoftKeyEvent.");
+            Log.d(TAG, "responseSoftKeyEvent: " + sKey.toString());
         }
         if (null == sKey) return;
 

@@ -481,7 +481,11 @@ public class SoftKeyboardView extends View {
 
         Drawable bg;
         int textColor;
-        if ((mKeyPressed && softKey == mSoftKeyDown) || (softKey == focusedKey && focusFlag)) {
+        if ((mKeyPressed && softKey == mSoftKeyDown) ||
+                (focusFlag && (softKey == focusedKey ||
+                        (softKey.mKeyCode == -3 && focusedKey.mKeyCode == -3) ||
+                        (softKey.mKeyCode == -5 && focusedKey.mKeyCode == -5) ||
+                        (softKey.mKeyCode == 66 && focusedKey.mKeyCode == 66)))) {
             bg = softKey.getKeyHlBg();
             textColor = softKey.getColorHl();
         } else {
@@ -526,7 +530,7 @@ public class SoftKeyboardView extends View {
 
     public void setFocusedKey(SoftKey softKey) {
         focusedKey = softKey;
-        if (softKey != null){
+        if (softKey != null) {
             focusedKeyIndex = keys.indexOf(softKey);
             Log.d(TAG, "setFocusedKey: " + softKey.mKeyCode + " - " + softKey.mKeyLabel + ", index: " + focusedKeyIndex);
         } else {
@@ -576,9 +580,12 @@ public class SoftKeyboardView extends View {
                 continue;
             int distance = Math.abs(TopY - key.mBottom);
             if (distance == closestDistance) {
-                if (Math.abs(key.mLeft - softKey.mLeft) < Math.abs(closestKey.mLeft - softKey.mLeft)) {
+//                if (Math.abs(key.mLeft - softKey.mLeft) < Math.abs(closestKey.mLeft - softKey.mLeft)) {
+//                    closestKey = key;
+//                }
+                if (Math.abs((key.mLeft + key.width() / 2) - (softKey.mLeft + softKey.width()/2)) <
+                        Math.abs((closestKey.mLeft + closestKey.width() / 2) - (softKey.mLeft + softKey.width()/2)))
                     closestKey = key;
-                }
             } else if (distance < closestDistance) {
                 closestKey = key;
                 closestDistance = distance;
@@ -602,9 +609,12 @@ public class SoftKeyboardView extends View {
                 continue;
             int distance = Math.abs(key.mTop - bottomY);
             if (distance == closestDistance) {
-                if (Math.abs(key.mLeft - softKey.mLeft) < Math.abs(closestKey.mLeft - softKey.mLeft)) {
+//                if (Math.abs(key.mLeft - softKey.mLeft) < Math.abs(closestKey.mLeft - softKey.mLeft)) {
+//                    closestKey = key;
+//                }
+                if (Math.abs((key.mLeft + key.width() / 2) - (softKey.mLeft + softKey.width()/2)) <
+                        Math.abs((closestKey.mLeft + closestKey.width() / 2) - (softKey.mLeft + softKey.width()/2)))
                     closestKey = key;
-                }
             } else if (distance < closestDistance) {
                 closestKey = key;
                 closestDistance = distance;

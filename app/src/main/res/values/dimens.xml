@@ -15,4 +15,6 @@
 -->
 <resources>
   <dimen name="candview_background_padding">0dip</dimen>
+  <dimen name="candidate_margin_left_right">3dip</dimen>
+  <dimen name="composing_height">18dip</dimen>
 </resources>
