@@ -18,6 +18,7 @@ android {
         aaptOptions {
             noCompress "dat"
         }
+        archivesBaseName = "ime_pinyin"
     }
     signingConfigs {
         sign_aosp {
@@ -52,6 +53,13 @@ android {
         }
     }
     namespace "com.android.inputmethod.pinyin"
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "${archivesBaseName}-${variant.name}-${defaultConfig.versionName}.apk"
+        }
+    }
+
 }
 
 dependencies {
@@ -62,3 +70,19 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+// Define a custom task to copy the APK
+task copyApk(type: Copy) {
+    def apkDir = file("${project.buildDir}/outputs/apk/release")
+    from apkDir
+    include 'ime_pinyin-release-1.0.apk' // Replace with the actual APK filename if needed
+    into project.rootDir
+}
+
+task delApk(type: Delete) {
+    def apkFile = file("${project.rootDir}/ime_pinyin-release-1.0.apk") // Replace with the actual APK filename if needed
+    delete apkFile
+}
+// Make the copyApk task depend on the assembleRelease task
+tasks.getByName("assemble").dependsOn(copyApk)
+tasks.getByName("clean").dependsOn(delApk)
