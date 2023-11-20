@@ -1,5 +1,39 @@
 apply plugin: 'com.android.application'
 
+def getVersionTag = { variant ->
+    def stdout
+    try {
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine "git", "describe", "--match", "${variant}/*", "--tags"
+            standardOutput = stdout
+        }
+        def longTag = stdout.toString().trim()
+
+        return longTag.substring(longTag.indexOf('/') + 1, longTag.indexOf('-'))
+    } catch (exception) {
+        return "0.0.0";
+    }
+}
+
+def getVersionCode = { tag ->
+    def parts = tag.tokenize('.')
+    if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 2) {
+        throw new RuntimeException("Invalid version tag \"${tag}\", format \"x.y.z\" expected.")
+    }
+    if(parts[1].length() == 1) {
+        parts[1] = "0" + parts[1]
+    }
+    if(parts[2].length() == 1) {
+        parts[2] = "0" + parts[2]
+    }
+    return Integer.parseInt(parts[0] + parts[1] + parts[2])
+}
+
+def getVersionName = { tag ->
+    return tag
+}
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -7,8 +41,8 @@ android {
         minSdkVersion 26
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 10000
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -62,6 +96,19 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
+            def versionTag = getVersionTag('release')
+            def myVersionCode = getVersionCode(versionTag)
+            def myVersionName = getVersionName(versionTag)
+
+            println variant.name + "[" + myVersionCode + ", " + myVersionName + "]"
+
+            if (versionTag.equalsIgnoreCase("0.0.0")) {
+                output.versionNameOverride = defaultConfig.versionName
+                output.versionCodeOverride = defaultConfig.versionCode
+            } else {
+                output.versionNameOverride = myVersionName
+                output.versionCodeOverride = myVersionCode
+            }
             outputFileName = "${archivesBaseName}-${variant.name}-${defaultConfig.versionName}.apk"
         }
     }
