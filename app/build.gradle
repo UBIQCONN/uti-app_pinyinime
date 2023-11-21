@@ -10,7 +10,7 @@ def getVersionTag = { variant ->
         }
         def longTag = stdout.toString().trim()
 
-        return longTag.substring(longTag.indexOf('/') + 1, longTag.indexOf('-'))
+        return longTag.substring(longTag.indexOf('/') + 1)
     } catch (exception) {
         return "0.0.0";
     }
@@ -109,7 +109,7 @@ android {
                 output.versionNameOverride = myVersionName
                 output.versionCodeOverride = myVersionCode
             }
-            outputFileName = "${archivesBaseName}-${variant.name}-${defaultConfig.versionName}.apk"
+            outputFileName = "${archivesBaseName}-${variant.name}-${output.versionNameOverride}.apk"
         }
     }
 
@@ -125,15 +125,41 @@ dependencies {
 }
 
 // Define a custom task to copy the APK
+//task copyApk(type: Copy) {
+//    def apkDir = file("${project.buildDir}/outputs/apk/release")
+//    from apkDir
+//    include "${archivesBaseName}-release*.apk" // Replace with the actual APK filename if needed
+//    into project.rootDir
+//}
+
 task copyApk(type: Copy) {
-    def apkDir = file("${project.buildDir}/outputs/apk/release")
-    from apkDir
-    include 'ime_pinyin-release-1.0.apk' // Replace with the actual APK filename if needed
-    into project.rootDir
+    // Iterate over application variants
+    android.applicationVariants.all { variant ->
+        // Get the output file for the variant
+        def outputFileName = variant.outputs.first().outputFileName
+
+        // Construct the source file path
+        def sourceFile = "${project.buildDir}/outputs/apk/${variant.name}/${outputFileName}"
+
+        // Set the destination directory
+        def destinationDirectory = "${project.rootDir}/"
+
+        //println "source file " + sourceFile
+        // Copy the APK file
+        from sourceFile
+        into destinationDirectory
+        rename { fileName ->
+            // Rename the file if needed
+            fileName
+        }
+
+        // Print a debug message
+        println "Copying $outputFileName to $destinationDirectory"
+    }
 }
 
 task delApk(type: Delete) {
-    def apkFile = file("${project.rootDir}/ime_pinyin-release-1.0.apk") // Replace with the actual APK filename if needed
+    def apkFile = file("${project.rootDir}/*.apk") // Replace with the actual APK filename if needed
     delete apkFile
 }
 // Make the copyApk task depend on the assembleRelease task
