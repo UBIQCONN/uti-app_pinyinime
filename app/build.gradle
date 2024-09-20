@@ -9,8 +9,12 @@ def getVersionTag = { variant ->
             standardOutput = stdout
         }
         def longTag = stdout.toString().trim()
+        println longTag
 
-        return longTag.substring(longTag.indexOf('/') + 1)
+        if (longTag.indexOf('-') > 0)
+            return longTag.substring(longTag.indexOf('/') + 1, longTag.indexOf('-'))
+        else
+            return longTag.substring(longTag.indexOf('/') + 1)
     } catch (exception) {
         return "0.0.0";
     }
