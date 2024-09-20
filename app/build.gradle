@@ -77,12 +77,12 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            signingConfig signingConfigs.sign_nxp_evk
+            signingConfig signingConfigs.sign_ubiqconn
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
             minifyEnabled false
-            signingConfig signingConfigs.sign_nxp_evk
+            signingConfig signingConfigs.sign_ubiqconn
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
